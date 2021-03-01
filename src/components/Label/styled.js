@@ -8,5 +8,6 @@ const StyledLabel = styled.p`
   color: white;
   background-color: #3f3f3f;
   font-size: 14px;
+  max-height: 20px;
 `
 export default StyledLabel;

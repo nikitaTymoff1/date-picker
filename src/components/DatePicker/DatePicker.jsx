@@ -102,21 +102,31 @@ const DatePicker = props => {
             startDate: startDate,
             endDate: endDate
         }
-        if (isUniqRange(multiRange, newRange))
+        if (isUniqRange(multiRange, newRange)){
             setMultiRange([...multiRange, newRange])
+            props.onSelect([...multiRange, newRange])
+        }
     }
-
 
     const pickDate = (e) => {
         const timestamp = Number(e.target.dataset.timestamp)
         setActiveRange(-1)
-        if (props.type === 'single') return setStartDate(timestamp)
+        if (props.type === 'single') {
+            props.onSelect(timestampToDate(timestamp))
+            return setStartDate(timestamp)
+        }
         if (!startDate) {
             setStartDate(timestamp)
         } else if (timestamp <= startDate) {
             setStartDate(timestamp)
         } else {
             setEndDate(timestamp)
+            if (props.type === 'range')
+                props.onSelect(
+                    {
+                        startDate: timestampToDate(startDate),
+                        endDate: timestampToDate(timestamp)
+                    })
         }
         if (startDate && endDate) {
             if (props.type === 'multi-range') {
@@ -144,6 +154,7 @@ const DatePicker = props => {
         let multiRangeArr = (JSON.parse(JSON.stringify(multiRange)))
         multiRangeArr.splice(index, 1);
         setMultiRange(multiRangeArr)
+        props.onSelect(multiRangeArr)
         setActiveRange(-1)
         setStartDate(0);
         setEndDate(0)
@@ -151,22 +162,17 @@ const DatePicker = props => {
 
     return (
         <Wrapper type={props.type}>
-            <Header
-                type={props.type}
-                toggleShow={toggleShow}
-                startDate={startDate ? timestampToDate(startDate) : 'pick a date'}
-                endDate={endDate ? timestampToDate(endDate) : ''}
-                multiRange={multiRange}
-                deleteRange={deleteRange}
-                setActiveRange={changeActiveRange}
-                activeRange={activeRange}
-                showCalendar={showCalendar}
-            />
+            <Header type={props.type} toggleShow={toggleShow}/>
             {showCalendar ?
                 <Calendar
                     year={year}
                     monthName={monthNames[month]}
                     data={monthArray}
+                    multiRange={multiRange}
+                    deleteRange={deleteRange}
+                    setActiveRange={changeActiveRange}
+                    activeRange={activeRange}
+                    showCalendar={showCalendar}
                     startDate={startDate}
                     endDate={endDate}
                     pickDate={pickDate}

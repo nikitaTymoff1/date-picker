@@ -3,12 +3,11 @@ import PropTypes from 'prop-types';
 import StyledLabel from "./styled";
 
 const Label = props => {
-    return props.text  ?
-     (
+    return(
         <StyledLabel {...props}>
-            {props.text}
+            {props.text || 'YYYY-MM-DD'}
         </StyledLabel>
-    ): null
+    )
 };
 
 Label.propTypes = {
