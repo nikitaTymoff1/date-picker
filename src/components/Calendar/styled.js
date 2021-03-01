@@ -18,28 +18,35 @@ const CellWrapper = styled.div`
 const Header = styled.div`
     color: white;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-`
-const YearContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 `
 const BigText = styled.div`
-    line-height: 50px;
     font-size: 50px;
-`
-const StyledButton = styled.div`
-    font-size: 25px;
-    cursor: pointer;
 `
 const Footer = styled.div`
 display: flex;
 align-items: center;
 justify-content: center;
+
 color: white;
 `
+const Row = styled.div`
+display: flex;
+flex-direction: row;
+text-align: center;
+`
 
-export {CellWrapper, Header, Wrapper, YearContainer, BigText, StyledButton, Footer};
+const SmallText = styled.div`
+    font-size: 15px;
+`
+const HeaderIconButton = styled.div`
+padding-top: 22px;
+font-size: 25px;
+cursor: pointer;
+&:hover{
+color: #e9204e;
+}
+`
+
+export {SmallText,CellWrapper,Row, Header, Wrapper, HeaderIconButton, BigText, Footer};

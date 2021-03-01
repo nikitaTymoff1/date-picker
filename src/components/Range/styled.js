@@ -15,7 +15,9 @@ const StyledRange = styled.div`
     color: ${({active}) => active ? '#e9204e' : 'white'};
     height: 30px;
     padding: 2px;
- 
+ &:hover{
+color: #e9204e;
+}
 `
 const Row = styled.div`
 display: flex;
