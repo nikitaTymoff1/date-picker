@@ -1,34 +1,34 @@
+// Absolute i,ports
 import React from 'react';
 import PropTypes from 'prop-types';
+import uuid from 'react-uuid'
+
+// Components
 import Range from "../Range/Range";
 
-
-const RangeArray = props => {
-    const {deleteRange,activeRange,setActiveRange,multiRange,showCalendar} = props
-    if (multiRange.length && showCalendar)
-        return (
-            <>
-                {multiRange.map((range, index) => {
-                        return (
-                            <Range
-                                key={range.startDate + range.endDate}
-                                range={range}
-                                index={index}
-                                setActiveRange={setActiveRange}
-                                activeRange={activeRange}
-                                deleteRange={deleteRange}
-                            />
-                        )
-                    }
-                )}
-            </>
-        )
-    else return <p>Pick a date</p>
-};
+const RangeArray = ({deleteRange, activeRange, setActiveRange, multiRange, showCalendar}) => (
+    multiRange.length && showCalendar
+        ? <>
+            {multiRange.map((range, index) => {
+                    return (
+                        <Range
+                            key={uuid()}
+                            range={range}
+                            index={index}
+                            setActiveRange={setActiveRange}
+                            activeRange={activeRange}
+                            deleteRange={deleteRange}
+                        />
+                    )
+                }
+            )}
+        </>
+        : <p>Pick a date</p>
+)
 
 RangeArray.propTypes = {
     deleteRange: PropTypes.func.isRequired,
-    activeRange:PropTypes.number.isRequired,
+    activeRange: PropTypes.number.isRequired,
     setActiveRange: PropTypes.func.isRequired,
     multiRange: PropTypes.arrayOf(PropTypes.shape({
         startDate: PropTypes.number.isRequired,

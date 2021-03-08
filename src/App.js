@@ -4,6 +4,7 @@ import DatePicker from './components/DatePicker/DatePicker'
 import Label from "./components/Label/Label";
 import {Row, Col} from "./components/Calendar/styled";
 import timestampToDate from "./helpers/timestampToDate";
+import uuid from 'react-uuid'
 
 
 const App = () => {
@@ -27,7 +28,7 @@ const App = () => {
                 <Col>
                     {rangeArr.map(range => (
                         (
-                            <Row key={Math.random()}>
+                            <Row key={uuid()}>
                                 <Label text={timestampToDate(range.startDate)}/>
                                 <Label text={timestampToDate(range.endDate)}/>
                             </Row>
