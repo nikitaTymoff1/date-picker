@@ -2,15 +2,17 @@ import './App.css';
 import React, {useState} from "react";
 import DatePicker from './components/DatePicker/DatePicker'
 import Label from "./components/Label/Label";
-import {Row,Col} from "./components/Calendar/styled";
-import timestampToDate from "./api/helpers/timestampToDate";
+import {Row, Col} from "./components/Calendar/styled";
+import timestampToDate from "./helpers/timestampToDate";
 
-function App() {
+
+const App = () => {
     const [singleDate, setSingleDate] = useState('')
     const [range, setRange] = useState({})
     const [rangeArr, setRangeArr] = useState([])
+
     return (
-        <div style={{marginLeft:'30px'}}>
+        <div style={{marginLeft: '30px'}}>
             <Row>
                 <DatePicker type={'single'} onSelect={setSingleDate}/>
                 <Label text={singleDate}/>
@@ -23,21 +25,16 @@ function App() {
             <Row>
                 <DatePicker type={'multi-range'} onSelect={setRangeArr}/>
                 <Col>
-                    {rangeArr.map(range => {
-                        return (
+                    {rangeArr.map(range => (
+                        (
                             <Row key={Math.random()}>
                                 <Label text={timestampToDate(range.startDate)}/>
                                 <Label text={timestampToDate(range.endDate)}/>
                             </Row>
-                        )
-                    })}
+                        ))
+                    )}
                 </Col>
-
             </Row>
-            {/*<DatePicker type={'range'} onSelect={setRange}/>*/}
-            {/*<DatePicker type={'multi-range'} onSelect={setRangeArr}/>*/}
-            {/*<div>{JSON.stringify(range)}</div>*/}
-            {/*<div>{JSON.stringify(rangeArr)}</div>*/}
         </div>
     );
 }

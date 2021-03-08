@@ -1,18 +1,15 @@
+// Absolute imports
 import React from 'react';
 import PropTypes from 'prop-types';
+
+// Styled
 import StyledLabel from "./styled";
 
-const Label = props => {
-    return(
-        <StyledLabel {...props}>
-            {props.text || 'YYYY-MM-DD'}
-        </StyledLabel>
-    )
-};
+const Label = (props) => (<StyledLabel {...props}>{props.text || 'YYYY-MM-DD'}</StyledLabel>)
 
 Label.propTypes = {
-    text:PropTypes.string,
-    onclick: PropTypes.func
+    text: PropTypes.string,
+    onClick: PropTypes.func
 };
 
 export default Label;

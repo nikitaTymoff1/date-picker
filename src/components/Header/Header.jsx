@@ -1,21 +1,28 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {Row} from "./styled";
+// Absolute imports
+import React from "react";
+import PropTypes from "prop-types";
+
+// Components
 import Label from "../Label/Label";
 
-const Header = props => {
-    const {toggleShow, type} = props
-    let text = type === 'single' ? 'pick a date' : type === 'range' ? 'pick a range' : 'add a range'
-    return (
-        <Row>
-            <Label onClick={toggleShow} text={text}/>
-        </Row>
-    );
+// Styled
+import { Row } from "./styled";
+
+const mapText = {
+    single: "pick a date",
+    range: "pick a range",
+    "multi-range": "add a range"
 };
 
+const Header = ({ toggleShow, type }) => (
+    <Row>
+        <Label onClick={toggleShow} text={mapText[type]} />
+    </Row>
+);
+
 Header.propTypes = {
-    toggleShow: PropTypes.func,
-    type: PropTypes.string
+    toggleShow: PropTypes.func.isRequired,
+    type: PropTypes.string.isRequired,
 };
 
 export default Header;

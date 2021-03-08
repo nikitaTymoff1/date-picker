@@ -27,14 +27,14 @@ const RangeArray = props => {
 };
 
 RangeArray.propTypes = {
-    deleteRange: PropTypes.func,
-    activeRange:PropTypes.number,
-    setActiveRange: PropTypes.func,
+    deleteRange: PropTypes.func.isRequired,
+    activeRange:PropTypes.number.isRequired,
+    setActiveRange: PropTypes.func.isRequired,
     multiRange: PropTypes.arrayOf(PropTypes.shape({
-        startDate: PropTypes.number,
-        endDate: PropTypes.number
-    })),
-    showCalendar: PropTypes.bool
+        startDate: PropTypes.number.isRequired,
+        endDate: PropTypes.number.isRequired
+    })).isRequired,
+    showCalendar: PropTypes.bool.isRequired
 };
 
 export default RangeArray;

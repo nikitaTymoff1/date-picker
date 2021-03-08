@@ -1,14 +1,23 @@
+// Absolute imports
 import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
-import {monthNames} from './monthNames'
-import {Wrapper} from "./styled";
-import timestampToDate from "../../api/helpers/timestampToDate";
-import getNumberOfDays from "../../api/helpers/getNumberOfDays";
+
+// Components
 import Calendar from "../Calendar/Calendar";
 import Header from "../Header/Header";
-import isUniqRange from "../../api/helpers/isUniqRange";
 
-const DatePicker = props => {
+// Helpers
+import monthNames from './monthNames'
+import timestampToDate from "../../helpers/timestampToDate";
+import getNumberOfDays from "../../helpers/getNumberOfDays";
+import isUniqRange from "../../helpers/isUniqRange";
+import changeMonth from "../../helpers/changeMonth";
+
+// Styled
+import {Wrapper} from "./styled";
+
+
+const DatePicker = ({type, onSelect}) => {
     let [startDate, setStartDate] = useState(0)
     let [endDate, setEndDate] = useState(0)
     let [showCalendar, setShowCalendar] = useState(false)
@@ -19,7 +28,7 @@ const DatePicker = props => {
     let [activeRange, setActiveRange] = useState(-1)
 
     const toggleShow = () => {
-        if (showCalendar === true && props.type === 'multi-range' && (startDate && endDate)) {
+        if (showCalendar === true && type === 'multi-range' && (startDate && endDate)) {
             createNewRange()
             setStartDate(0)
             setEndDate(0)
@@ -30,47 +39,47 @@ const DatePicker = props => {
         const firstDayInMonthIndex = (new Date(year, month)).getDay();
         const numberOfDays = getNumberOfDays(year, month);
         let monthArray = [];
-        let rows = 5;
-        let cols = 7;
-
-        for (let index = 0; index < rows * cols; index++) {
-            let day = createDay({index, firstDayInMonthIndex, month, year, numberOfDays,})
+        for (let index = 0; index < 35; index++) {
+            const day = createDay(
+                {
+                    index,
+                    firstDayInMonthIndex,
+                    month,
+                    year,
+                    numberOfDays,
+                })
             monthArray.push(day)
         }
         setMonthArray(monthArray)
     }
+
     const createDay = ({index, firstDayInMonthIndex, month, year, numberOfDays}) => {
-        let prevMonth = month - 1;
-        let prevYear = year;
-        if (prevMonth < 0) {
-            prevMonth = 11;
-            prevYear--;
-        }
-        let nextMonth = month + 1;
-        let nextYear = year;
-        if (nextMonth > 12) {
-            nextMonth = 0
-            nextYear++;
+        const previousDate = changeMonth(month, year, -1)
+        const nextDate = changeMonth(month, year, 1)
+
+        const currentDayDate = {
+            year: year,
+            month: month,
         }
 
-        let timestampYear = year;
-        let timestampMonth = month;
+        const prevMonthNumberOfDays = getNumberOfDays(previousDate.year, previousDate.month);
 
-        let prevMonthNumberOfDays = getNumberOfDays(prevYear, prevMonth);
+        let currentDayNumber = index - firstDayInMonthIndex + 2
 
-        let day = index - firstDayInMonthIndex + 2
-        if (day <= 0) {
-            timestampYear = prevYear
-            timestampMonth = prevMonth
-            day = prevMonthNumberOfDays + day
-        } else if (day > numberOfDays) {
-            timestampYear = nextYear
-            timestampMonth = nextMonth
-            day = day - numberOfDays
+        if (currentDayNumber <= 0) {
+            currentDayDate.year = previousDate.year
+            currentDayDate.month = previousDate.month
+            currentDayNumber = prevMonthNumberOfDays + currentDayNumber
         }
-        let timestamp = new Date(timestampYear, timestampMonth, day).getTime();
+        else if (currentDayNumber > numberOfDays) {
+            currentDayDate.year = nextDate.year
+            currentDayDate.month = nextDate.month
+            currentDayNumber = currentDayNumber - numberOfDays
+        }
+
+        const timestamp = new Date(currentDayDate.year, currentDayDate.month, currentDayNumber).getTime();
         return {
-            day: day,
+            day: currentDayNumber,
             timestamp: timestamp,
         }
     }
@@ -79,114 +88,144 @@ const DatePicker = props => {
         let date = new Date();
         setYear(date.getFullYear())
         setMonth(date.getMonth())
+        createMonth(date.getMonth(), date.getFullYear())
     }, [])
 
-    useEffect(() => {
-        createMonth(month, year)
-    }, [month, year])
-
     const toggleMonth = (offset) => {
-        let newMonth = month + offset;
-        if (newMonth === -1) {
-            setMonth(11);
-            setYear(year - 1);
-        } else if (newMonth === 12) {
-            setMonth(0);
-            setYear(year + 1);
-        } else {
-            setMonth(newMonth)
-        }
+        const newDate = changeMonth(month, year, offset)
+        setYear(newDate.year)
+        setMonth(newDate.month)
+        createMonth(newDate.month, newDate.year)
     }
-    const createNewRange = () => {
-        let newRange = {
+
+    const toggleYear = (offset) => {
+        setYear(year + offset)
+        createMonth(month, year + offset)
+    }
+
+    const createNewRange = (dataPickerType = 'multi-range') => {
+        if (dataPickerType !== 'multi-range') return
+        const newRange = {
             startDate: startDate,
             endDate: endDate
         }
-        if (isUniqRange(multiRange, newRange)){
+        if (isUniqRange(multiRange, newRange)) {
             setMultiRange([...multiRange, newRange])
-            props.onSelect([...multiRange, newRange])
+            returnDate(type, newRange)
+        }
+    }
+    const returnDate = (dataPickerType, range, timestamp) => {
+
+        switch (dataPickerType) {
+            case 'single':
+                return onSelect(timestampToDate(timestamp))
+
+            case 'range':
+                return onSelect(
+                    {
+                        startDate: timestampToDate(startDate),
+                        endDate: timestampToDate(timestamp)
+                    })
+
+            case 'multi-range':
+                return range && onSelect([...multiRange, range])
+
+            default:
+                break;
         }
     }
 
     const pickDate = (e) => {
         const timestamp = Number(e.target.dataset.timestamp)
         setActiveRange(-1)
-        if (props.type === 'single') {
-            props.onSelect(timestampToDate(timestamp))
+
+        if (type === 'single') {
+            returnDate(type, null, timestamp)
             return setStartDate(timestamp)
         }
+
         if (!startDate) {
-            setStartDate(timestamp)
-        } else if (timestamp <= startDate) {
-            setStartDate(timestamp)
+            return setStartDate(timestamp)
+        }
+
+        if (timestamp <= startDate) {
+            return setStartDate(timestamp)
         } else {
             setEndDate(timestamp)
-            if (props.type === 'range')
-                props.onSelect(
-                    {
-                        startDate: timestampToDate(startDate),
-                        endDate: timestampToDate(timestamp)
-                    })
+            returnDate(type, null, timestamp)
         }
         if (startDate && endDate) {
-            if (props.type === 'multi-range') {
-                createNewRange()
-            }
+            createNewRange(type)
             setEndDate(0)
             setStartDate(timestamp)
         }
     }
     const changeActiveRange = (e) => {
-        let index = e.target.parentNode.dataset.index;
-        let activeYear = Number(e.target.parentNode.dataset.year);
-        let activeMonth = Number(e.target.parentNode.dataset.month);
+        const {dataset} = e.target.parentNode
+        const index = dataset.index;
+        const activeYear = Number(dataset.year);
+        const activeMonth = Number(dataset.month);
+
         if (!multiRange[index]) return
+
         const activeStartDate = multiRange[index].startDate;
         const activeEndDate = multiRange[index].endDate;
+
         setStartDate(activeStartDate);
         setEndDate(activeEndDate)
         setActiveRange(Number(index))
         setYear(activeYear)
         setMonth(activeMonth)
     }
+
     const deleteRange = (e) => {
         const index = e.target.parentNode.dataset.index;
-        let multiRangeArr = (JSON.parse(JSON.stringify(multiRange)))
+        const multiRangeArr = (JSON.parse(JSON.stringify(multiRange)))
+
         multiRangeArr.splice(index, 1);
         setMultiRange(multiRangeArr)
-        props.onSelect(multiRangeArr)
+
+        onSelect(multiRangeArr)
+
         setActiveRange(-1)
         setStartDate(0);
         setEndDate(0)
     }
 
     return (
-        <Wrapper type={props.type}>
-            <Header type={props.type} toggleShow={toggleShow}/>
-            {showCalendar ?
-                <Calendar
-                    year={year}
-                    monthName={monthNames[month]}
-                    data={monthArray}
-                    multiRange={multiRange}
-                    deleteRange={deleteRange}
-                    setActiveRange={changeActiveRange}
-                    activeRange={activeRange}
-                    showCalendar={showCalendar}
-                    startDate={startDate}
-                    endDate={endDate}
-                    pickDate={pickDate}
-                    toggleMonth={toggleMonth}
-                    setYear={setYear}
-                    toggleShow={toggleShow}
-                    type={props.type}
-                /> : null}
+        <Wrapper type={type}>
+            <Header type={type} toggleShow={toggleShow}/>
+            {showCalendar &&
+            <Calendar
+                year={year}
+                monthName={monthNames[month]}
+                data={monthArray}
+                multiRange={multiRange}
+                deleteRange={deleteRange}
+                setActiveRange={changeActiveRange}
+                activeRange={activeRange}
+                showCalendar={showCalendar}
+                startDate={startDate}
+                endDate={endDate}
+                pickDate={pickDate}
+                toggleMonth={toggleMonth}
+                toggleYear={toggleYear}
+                toggleShow={toggleShow}
+                type={type}
+                month={month}
+            />}
         </Wrapper>
     );
 };
 
+
+DatePicker.defaultProps = {
+    type: 'single'
+}
+
 DatePicker.propTypes = {
-    type: PropTypes.string
+    type: PropTypes.string.isRequired,
+    onSelect: PropTypes.func.isRequired,
 };
 
 export default DatePicker;

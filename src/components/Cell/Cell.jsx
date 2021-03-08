@@ -1,19 +1,16 @@
+// Absolute imports
 import React from 'react';
 import PropTypes from 'prop-types';
+
+// Styled
 import StyledP from "./styled";
 
-const Cell = props => {
-    return (
-        <StyledP {...props}>
-            {props.children}
-        </StyledP>
-    );
-};
+const Cell = (props) => <StyledP {...props}>{props.children}</StyledP>;
 
 Cell.propTypes = {
-    date: PropTypes.bool,
+    IsDate: PropTypes.bool,
     onClick: PropTypes.func,
-    timestamp: PropTypes.number,
+    'data-timestamp': PropTypes.number,
     isBetweenActive: PropTypes.bool,
     active: PropTypes.bool
 };

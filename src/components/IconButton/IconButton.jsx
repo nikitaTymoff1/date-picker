@@ -1,14 +1,12 @@
+// Absolute imports
 import React from 'react';
 import PropTypes from 'prop-types';
+
+// Styled
 import StyledButton from "./styled";
-//
-const IconButton = props => {
-    return (
-        <StyledButton {...props}>
-            {props.children}
-        </StyledButton>
-    );
-};
+
+const IconButton = (props) => (<StyledButton {...props}>{props.children}</StyledButton>);
+
 IconButton.propTypes = {
     size: PropTypes.string,
     onClick: PropTypes.func

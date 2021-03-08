@@ -12,4 +12,4 @@ const monthNames = [
     'November',
     'December'
 ];
-export  {monthNames}
+export default monthNames
